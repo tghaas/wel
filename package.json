@@ -1,0 +1,17 @@
+{
+  "main": "index.js",
+  "scripts": {
+    "compile": "./node_modules/.bin/tsc",
+    "compile-watch": "./node_modules/.bin/tsc -W"
+  },
+  "dependencies": {
+    "@types/express": "*",
+    "@types/node": "*",
+    "@types/request-promise-native": "^1.0.15",
+    "express": "^4.16.4",
+    "influx": "*",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.5",
+    "typescript": "^3.1.3"
+  }
+}

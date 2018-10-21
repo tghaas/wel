@@ -1,0 +1,104 @@
+{
+  "defaultSeverity": "error",
+  "extends": [
+    "tslint:recommended",
+    "tslint-eslint-rules"
+  ],
+  "linterOptions": {
+    "exclude": [
+      "src/v2/helm/tiller/gen/**/*",
+      "src/commands/*",
+      "src/pollev/**/*.*",
+      "src/test/pollev/**/*.*"
+    ]
+  },
+  "jsRules": {
+    "no-unused-expression": false,
+    "variable-name": false,
+    "trailing-comma": false,
+    "new-parens": false,
+    "space-before-function-paren": false
+  },
+  "rules": {
+    "quotemark": [
+      true,
+      "double",
+      "avoid-escape"
+    ],
+    "semicolon": [
+      true,
+      "never"
+    ],
+    "no-require-imports": false,
+    "no-var-requires": false,
+    "no-empty": false,
+    "no-namespace": false,
+    "space-before-function-paren": [
+      true,
+      {
+        "anonymous": "always",
+        "named": "never",
+        "asyncArrow": "always"
+      }
+    ],
+    "array-bracket-spacing": [
+      true,
+      "always"
+    ],
+    "whitespace": [
+      true,
+      "check-branch",
+      "check-decl",
+      "check-operator",
+      "check-module",
+      "check-separator",
+      "check-rest-spread",
+      "check-type",
+      "check-type-operator",
+      "check-preblock"
+    ],
+    "trailing-comma": [
+      true,
+      {
+        "multiline": {
+          "objects": "never",
+          "arrays": "ignore",
+          "functions": "never",
+          "typeLiterals": "ignore"
+        },
+        "singleline": "never",
+        "esSpecCompliant": true
+      }
+    ],
+    "no-unused-expression": false,
+    "object-literal-sort-keys": false,
+    "interface-name": false,
+    "max-classes-per-file": [
+      true,
+      5
+    ],
+    "member-access": false,
+    "member-ordering": false,
+    "variable-name": [
+      true,
+      "ban-keywords",
+      "check-format",
+      "allow-leading-underscore",
+      "allow-pascal-case"
+    ],
+    "no-console": false,
+    "forin": false,
+    "ordered-imports": [
+      true,
+      {
+        "import-sources-order": "any"
+      }
+    ],
+    "no-consecutive-blank-lines": [
+      true,
+      2
+    ],
+    "arrow-parens": false
+  },
+  "rulesDirectory": []
+}

@@ -1,19 +1,22 @@
 import * as Express from "express"
 import * as Influx from "influx"
-import * as Request from "request-promise-native"
 import * as Winston from "winston"
+import Axios from "axios"
+import { debug } from "console"
 import { InfluxWelPoint } from "./types"
 
 
 "use strict"
 
 const wel = Express()
+const logLevel = process.env.DEBUG === "true" ? "debug" : "info"
 const logger = Winston.createLogger({
   format: Winston.format.combine(
     Winston.format.timestamp(),
     Winston.format.json()
   ),
-  transports: [ new Winston.transports.Console() ]
+  level: logLevel,
+  transports: [ new Winston.transports.Console({ level: logLevel }) ]
 })
 
 const influx = new Influx.InfluxDB({
@@ -32,13 +35,9 @@ wel.get("/cgi-bin/WEL_post.cgi", (req, res) => {
 
 async function sendToWel(queryString: object): Promise<any> {
   const welUrl = "http://www.welserver.com/cgi-bin/WEL_post.cgi"
-  const options = {
-    uri: welUrl,
-    qs: queryString
-  }
   try {
-    const result = await Request.get(options)
-    logger.info(`Result from WEL: ${result}`)
+    const result = await Axios.get(welUrl, { params: queryString })
+    logger.info(`Result from WEL: ${JSON.stringify(result.data)}`)
     return result
   } catch (e) {
     logger.error(`Error sending to WEL: ${e}`)

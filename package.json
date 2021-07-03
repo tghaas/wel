@@ -10,17 +10,15 @@
     "start": "node index.js"
   },
   "dependencies": {
+    "axios": "^0.21.1",
     "express": "^4.16.4",
     "influx": "*",
-    "request": "^2.88.0",
-    "request-promise-native": "^1.0.5",
     "typescript": "^4.3.4",
     "winston": "^3.3.3"
   },
   "devDependencies": {
     "@types/express": "*",
     "@types/node": "*",
-    "@types/request-promise-native": "^1.0.15",
     "tslint": "*",
     "tslint-eslint-rules": "*"
   }

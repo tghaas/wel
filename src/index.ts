@@ -37,7 +37,9 @@ async function sendToWel(queryString: object): Promise<any> {
 }
 
 async function writeToInflux(queryString: any): Promise<void> {
+  console.debug("Raw Wel Data: " + JSON.stringify(queryString))
   const parsedWelData: any = parseWelData(queryString)
+  console.debug("Parsed Wel Data: " + JSON.stringify(parsedWelData))
   const currentWelData: InfluxWelPoint = [ {
     measurement: "wel",
     tags: {
@@ -48,8 +50,8 @@ async function writeToInflux(queryString: any): Promise<void> {
       airSupply: parsedWelData.supply_air,
       basementTemp: parsedWelData.Basement_Temp,
       bedRoomTemp: parsedWelData.zone2_temp,
-      hotWaterGeneratorIn: parsedWelData.HWG_in,
-      hotWaterGeneratorOut: parsedWelData.HWG_out,
+      hotWaterGeneratorIn: parsedWelData.HWG_In,
+      hotWaterGeneratorOut: parsedWelData.HWG_Out,
       livingRoomTemp: parsedWelData.zone1_temp,
       outsideTemp: parsedWelData.outside_temp,
       wattNodeGSHP: parsedWelData.watt_node_GSHP,

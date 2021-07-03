@@ -1,11 +1,20 @@
 import * as Express from "express"
 import * as Influx from "influx"
 import * as Request from "request-promise-native"
+import * as Winston from "winston"
 import { InfluxWelPoint } from "./types"
+
 
 "use strict"
 
 const wel = Express()
+const logger = Winston.createLogger({
+  format: Winston.format.combine(
+    Winston.format.timestamp(),
+    Winston.format.json()
+  ),
+  transports: [ new Winston.transports.Console() ]
+})
 
 const influx = new Influx.InfluxDB({
   host: "wellogger.h.local",
@@ -29,17 +38,17 @@ async function sendToWel(queryString: object): Promise<any> {
   }
   try {
     const result = await Request.get(options)
-    console.log(`${Date().toLocaleString()} - Result from WEL: ${result}`)
+    logger.info(`Result from WEL: ${result}`)
     return result
   } catch (e) {
-    console.log(`${Date().toLocaleString()} - Error sending to WEL: ${e}`)
+    logger.error(`Error sending to WEL: ${e}`)
   }
 }
 
 async function writeToInflux(queryString: any): Promise<void> {
-  console.debug("Raw Wel Data: " + JSON.stringify(queryString))
+  logger.debug("Raw Wel Data: " + JSON.stringify(queryString))
   const parsedWelData: any = parseWelData(queryString)
-  console.debug("Parsed Wel Data: " + JSON.stringify(parsedWelData))
+  logger.debug("Parsed Wel Data: " + JSON.stringify(parsedWelData))
   const currentWelData: InfluxWelPoint = [ {
     measurement: "wel",
     tags: {
@@ -62,7 +71,7 @@ async function writeToInflux(queryString: any): Promise<void> {
   try {
     return await influx.writePoints(currentWelData)
   } catch (e) {
-    console.log(`Error writing to InfluxDB: ${e}`)
+    logger.error(`Error writing to InfluxDB: ${e}`)
   }
 }
 

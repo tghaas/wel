@@ -3,6 +3,9 @@
   "description": "An InfluxDB logging server for the welserver.com one-wire monitor.",
   "license": "ISC",
   "version": "0.1.0",
+  "engines": {
+    "node": "^18.0.0"
+  },
   "scripts": {
     "compile": "./node_modules/.bin/tsc",
     "compile-watch": "./node_modules/.bin/tsc -W",
@@ -21,5 +24,6 @@
     "@types/node": "*",
     "tslint": "*",
     "tslint-eslint-rules": "*"
-  }
+  },
+  "packageManager": "yarn@3.2.2"
 }

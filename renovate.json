@@ -1,0 +1,15 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "enabledManagers": ["npm"],
+  "rebaseWhen": "conflicted",
+  "prConcurrentLimit": 5,
+  "commitBodyTable": true,
+  "rangeStrategy": "bump",
+  "stabilityDays": 3,
+  "postUpdateOptions": [
+    "yarnDedupeHighest"
+   ],
+  "vulnerabilityAlerts": {
+    "stabilityDays": 0
+  }
+}

@@ -54,17 +54,17 @@ async function writeToInflux(queryString: any): Promise<void> {
       wel: queryString.Uu
     },
     fields: {
-      airReturn: parsedWelData.air_return,
-      airSupply: parsedWelData.supply_air,
-      basementTemp: parsedWelData.Basement_Temp,
-      bedRoomTemp: parsedWelData.zone2_temp,
-      hotWaterGeneratorIn: parsedWelData.HWG_In,
-      hotWaterGeneratorOut: parsedWelData.HWG_Out,
-      livingRoomTemp: parsedWelData.zone1_temp,
-      outsideTemp: parsedWelData.outside_temp,
-      wattNodeGSHP: parsedWelData.watt_node_GSHP,
-      wattNodeOther: parsedWelData.kwh_remain,
-      wattNodeTotal: parsedWelData.watt_node_Total
+      airReturn: parsedWelData.air_return || 0,
+      airSupply: parsedWelData.supply_air || 0,
+      basementTemp: parsedWelData.Basement_Temp || 0,
+      bedRoomTemp: parsedWelData.zone2_temp || 0,
+      hotWaterGeneratorIn: parsedWelData.HWG_In || 0,
+      hotWaterGeneratorOut: parsedWelData.HWG_Out || 0,
+      livingRoomTemp: parsedWelData.zone1_temp || 0,
+      outsideTemp: parsedWelData.outside_temp || 0,
+      wattNodeGSHP: parsedWelData.watt_node_GSHP || 0,
+      wattNodeOther: parsedWelData.kwh_remain || 0,
+      wattNodeTotal: parsedWelData.watt_node_Total || 0
     }
   } ]
   try {

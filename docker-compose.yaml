@@ -1,0 +1,29 @@
+services:
+  chronograph:
+    image: chronograph:latest
+    ports:
+      - "8888:8888"
+    environment:
+      - INFLUXDB_URL=http://diskstation.h.local:8086
+    depends_on:
+      - influxdb
+  influxdb:
+    image: influxdb:latest
+    ports:
+      - "8086:8086"
+    volumes:
+      - docker/influxdb:/var/lib/influxdb
+  wel:
+    image: travishaas/wel:latest
+    build: .
+    command: 
+    environment:
+      - DEBUG=false
+    ports:
+      - "9000:8080"
+    depends_on:
+      - influxdb
+networks:
+  bridge:
+    name: bridge
+    external: true

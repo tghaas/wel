@@ -2,9 +2,8 @@ import * as Express from "express"
 import * as Influx from "influx"
 import * as Winston from "winston"
 import Axios from "axios"
-import { debug } from "console"
-import { InfluxWelPoint } from "./types"
-
+import { InfluxWelPoint, temperatureSensor } from "./types"
+import { OutgoingHttpHeaders } from "http"
 
 "use strict"
 
@@ -44,6 +43,22 @@ async function sendToWel(queryString: object): Promise<any> {
   }
 }
 
+const haHeaders: OutgoingHttpHeaders = {
+  'Content-Type': 'text/json',
+  'Authorization': `Bearer ${process.env.HA_TOKEN}`
+}
+
+async function sendHomeAssistant(sensor: string, sensorData: temperatureSensor): Promise<any> {
+  const haUrl = `http://wellogger.h.local:8123/api/states/sensor.${sensor}`
+  try {
+    const result = await Axios.post(haUrl, sensorData, {headers: haHeaders})
+    logger.info(`Result from HA: ${JSON.stringify(result.data)}`)
+    return result
+  } catch (e) {
+    logger.error(`Error sending to HA: ${e}`)
+  }
+}
+
 async function writeToInflux(queryString: any): Promise<void> {
   logger.debug("Raw Wel Data: " + JSON.stringify(queryString))
   const parsedWelData: any = parseWelData(queryString)
@@ -68,6 +83,16 @@ async function writeToInflux(queryString: any): Promise<void> {
     }
   } ]
   try {
+    await sendHomeAssistant('outside_temp', {state: parsedWelData.outside_temp, attributes: {unit_of_measurement: "°F"}})
+    await sendHomeAssistant('zone1_temp', {state: parsedWelData.zone1_temp, attributes: {unit_of_measurement: "°F"}})
+    await sendHomeAssistant('zone2_temp', {state: parsedWelData.zone2_temp, attributes: {unit_of_measurement: "°F"}})
+    await sendHomeAssistant('basement_temp', {state: parsedWelData.basement_temp, attributes: {unit_of_measurement: "°F"}})
+    await sendHomeAssistant('hot_water_generator_in', {state: tempWhenOn(parsedWelData.Fan_G,parsedWelData.HWG_In), attributes: {unit_of_measurement: "°F"}})
+    await sendHomeAssistant('hot_water_generator_out', {state: tempWhenOn(parsedWelData.Fan_G,parsedWelData.HWG_Out), attributes: {unit_of_measurement: "°F"}})
+    await sendHomeAssistant('hvac_supply_air', {state: tempWhenOn(parsedWelData.Fan_G, parsedWelData.supply_air), attributes: {unit_of_measurement: "°F"}})
+    await sendHomeAssistant('hvac_return_air', {state: tempWhenOn( parsedWelData.Fan_G,parsedWelData.return_air), attributes: {unit_of_measurement: "°F"}})
+    await sendHomeAssistant('watt_node_heat_pump', {state: parsedWelData.watt_node_GSHP, attributes: {unit_of_measurement: "W"}})
+    await sendHomeAssistant('watt_node_total', {state: parsedWelData.watt_node_Total, attributes: {unit_of_measurement: "W"}})
     return await influx.writePoints(currentWelData)
   } catch (e) {
     logger.error(`Error writing to InfluxDB: ${e}`)
@@ -79,6 +104,12 @@ function parseWelData(welData: any): any {
     welData[ d ] = parseFloat(welData[ d ])
   }
   return welData
+}
+
+// Return certain temperatures only when the HVAC fan is running
+// if fan is off, return zero
+const tempWhenOn = (fanOnOff: number, temp: number): number => {
+  return (fanOnOff === 1) ? temp : 0
 }
 
 wel.listen(8080)

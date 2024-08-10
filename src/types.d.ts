@@ -23,3 +23,10 @@ export interface WelMeansurements {
   wattNodeOther: number
   wattNodeTotal: number
 }
+
+export interface temperatureSensor {
+  state: number
+  attributes: {
+    unit_of_measurement: string
+  }
+}

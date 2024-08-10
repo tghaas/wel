@@ -3,6 +3,6 @@ set -e
 
 yarn compile
 
-docker build . -t travishaas/wel:latest --arch amd64
+docker buildx build . -t travishaas/wel:homeassistant --platform=linux/amd64
 
-docker push travishaas/wel:latest
+docker image push travishaas/wel:homeassistant

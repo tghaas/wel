@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:20-alpine
 
 WORKDIR /app
 
@@ -6,7 +6,9 @@ COPY package.json .
 
 COPY yarn.lock .
 
-RUN yarn install --ignore-optional
+RUN corepack enable
+
+RUN yarn install
 
 COPY /build/ .
 

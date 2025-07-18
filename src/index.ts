@@ -1,4 +1,4 @@
-import * as Express from "express"
+import Express from "express"
 import * as Influx from "influx"
 import * as Winston from "winston"
 import Axios from "axios"
@@ -52,7 +52,7 @@ async function sendHomeAssistant(sensor: string, sensorData: temperatureSensor):
   const haUrl = `http://wellogger.h.local:8123/api/states/sensor.${sensor}`
   try {
     const result = await Axios.post(haUrl, sensorData, {headers: haHeaders})
-    logger.info(`Result from HA: ${JSON.stringify(result.data)}`)
+    logger.debug(`Result from HA: ${JSON.stringify(result.data)}`)
     return result
   } catch (e) {
     logger.error(`Error sending to HA: ${e}`)
@@ -71,15 +71,15 @@ async function writeToInflux(queryString: any): Promise<void> {
     fields: {
       airReturn: parsedWelData.air_return || 0,
       airSupply: parsedWelData.supply_air || 0,
-      basementTemp: parsedWelData.Basement_Temp || 0,
+      basementTemp: parsedWelData.basement_temp || 0,
       bedRoomTemp: parsedWelData.zone2_temp || 0,
-      hotWaterGeneratorIn: parsedWelData.HWG_In || 0,
-      hotWaterGeneratorOut: parsedWelData.HWG_Out || 0,
+      hotWaterGeneratorIn: parsedWelData.hwg_in || 0,
+      hotWaterGeneratorOut: parsedWelData.hwg_out || 0,
       livingRoomTemp: parsedWelData.zone1_temp || 0,
       outsideTemp: parsedWelData.outside_temp || 0,
-      wattNodeGSHP: parsedWelData.watt_node_GSHP || 0,
+      wattNodeGSHP: parsedWelData.watt_node_gshp || 0,
       wattNodeOther: parsedWelData.kwh_remain || 0,
-      wattNodeTotal: parsedWelData.watt_node_Total || 0
+      wattNodeTotal: parsedWelData.watt_node_total || 0
     }
   } ]
   try {
@@ -87,12 +87,14 @@ async function writeToInflux(queryString: any): Promise<void> {
     await sendHomeAssistant('zone1_temp', {state: parsedWelData.zone1_temp, attributes: {unit_of_measurement: "°F"}})
     await sendHomeAssistant('zone2_temp', {state: parsedWelData.zone2_temp, attributes: {unit_of_measurement: "°F"}})
     await sendHomeAssistant('basement_temp', {state: parsedWelData.basement_temp, attributes: {unit_of_measurement: "°F"}})
-    await sendHomeAssistant('hot_water_generator_in', {state: tempWhenOn(parsedWelData.Fan_G,parsedWelData.HWG_In), attributes: {unit_of_measurement: "°F"}})
-    await sendHomeAssistant('hot_water_generator_out', {state: tempWhenOn(parsedWelData.Fan_G,parsedWelData.HWG_Out), attributes: {unit_of_measurement: "°F"}})
-    await sendHomeAssistant('hvac_supply_air', {state: tempWhenOn(parsedWelData.Fan_G, parsedWelData.supply_air), attributes: {unit_of_measurement: "°F"}})
-    await sendHomeAssistant('hvac_return_air', {state: tempWhenOn( parsedWelData.Fan_G,parsedWelData.return_air), attributes: {unit_of_measurement: "°F"}})
-    await sendHomeAssistant('watt_node_heat_pump', {state: parsedWelData.watt_node_GSHP, attributes: {unit_of_measurement: "W"}})
-    await sendHomeAssistant('watt_node_total', {state: parsedWelData.watt_node_Total, attributes: {unit_of_measurement: "W"}})
+    await sendHomeAssistant('hot_water_generator_in', {state: tempWhenOn(parsedWelData.fan_g,parsedWelData.hwg_in), attributes: {unit_of_measurement: "°F"}})
+    await sendHomeAssistant('hot_water_generator_out', {state: tempWhenOn(parsedWelData.fan_g,parsedWelData.hwg_out), attributes: {unit_of_measurement: "°F"}})
+    await sendHomeAssistant('hvac_supply_air', {state: tempWhenOn(parsedWelData.fan_g, parsedWelData.supply_air), attributes: {unit_of_measurement: "°F"}})
+    await sendHomeAssistant('hvac_return_air', {state: tempWhenOn( parsedWelData.fan_g,parsedWelData.return_air), attributes: {unit_of_measurement: "°F"}})
+    await sendHomeAssistant('entering_water_temp', {state: tempWhenOn(parsedWelData.fan_g, parsedWelData.ewt), attributes: {unit_of_measurement: "°F"}})
+    await sendHomeAssistant('leaving_water_temp', {state: tempWhenOn(parsedWelData.fan_g, parsedWelData.lwt), attributes: {unit_of_measurement: "°F"}})
+    await sendHomeAssistant('watt_node_heat_pump', {state: parsedWelData.watt_node_gshp, attributes: {unit_of_measurement: "W"}})
+    await sendHomeAssistant('watt_node_total', {state: parsedWelData.watt_node_total, attributes: {unit_of_measurement: "W"}})
     return await influx.writePoints(currentWelData)
   } catch (e) {
     logger.error(`Error writing to InfluxDB: ${e}`)
